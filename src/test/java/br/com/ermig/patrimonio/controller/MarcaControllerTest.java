@@ -44,7 +44,7 @@ class MarcaControllerTest {
 	private MarcaRepository marcaRepository;
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testErroSalvarMarca() throws Exception {
 		when(this.marcaRepository.save(any(Marca.class))).thenReturn(this.marca);
 
@@ -63,7 +63,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testSalvarMarca() throws Exception {
 		when(this.marcaRepository.save(any(Marca.class))).thenReturn(this.marca);
 
@@ -80,7 +80,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testListarMarca() throws Exception {
 		when(this.marcaRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -99,7 +99,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testBuscarMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 
@@ -113,7 +113,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testAtualizarMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.marcaRepository.save(any(Marca.class))).then(
@@ -132,7 +132,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testRemoverMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 

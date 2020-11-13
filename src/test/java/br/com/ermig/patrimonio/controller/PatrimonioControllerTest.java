@@ -49,7 +49,7 @@ class PatrimonioControllerTest {
 	private PatrimonioRepository patrimonioRepository;
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testSalvarPatrimonio() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.patrimonioRepository.save(any(Patrimonio.class))).thenReturn(this.patrimonio);
@@ -68,7 +68,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testListarPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -88,7 +88,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testBuscarPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
 
@@ -103,7 +103,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testAtualizarPatrimonio() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
@@ -124,7 +124,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testRemoverPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
 

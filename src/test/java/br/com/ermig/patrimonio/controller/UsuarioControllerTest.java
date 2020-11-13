@@ -40,7 +40,7 @@ import br.com.ermig.patrimonio.repository.UsuarioRepository;
 @ActiveProfiles("test")
 class UsuarioControllerTest {
 
-	private final UsuarioDTO usuarioDTO = new UsuarioDTO(1, "Raimundo Castro", "rcastro@empresa.com.br", "123", List.of("USER", "ADMIN"));
+	private final UsuarioDTO usuarioDTO = new UsuarioDTO(1, "Raimundo Castro", "rcastro@empresa.com.br", "123", List.of("USER", "admin@patrimonio.com.br"));
 	private final Usuario usuario = new Usuario(usuarioDTO);
 
 	@Autowired
@@ -53,9 +53,9 @@ class UsuarioControllerTest {
 	private PerfilRepository perfilRepository;
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testSalvarUsuario() throws Exception {
-		when(this.perfilRepository.findByNome("ADMIN")).thenReturn(Optional.of(new Perfil(1, "ADMIN")));
+		when(this.perfilRepository.findByNome("admin@patrimonio.com.br")).thenReturn(Optional.of(new Perfil(1, "admin@patrimonio.com.br")));
 		when(this.usuarioRepository.save(any(Usuario.class))).thenReturn(this.usuario);
 
 		this.mvc.perform(
@@ -73,7 +73,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testListarUsuario() throws Exception {
 		when(this.usuarioRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -94,7 +94,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testBuscarUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 
@@ -110,7 +110,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testAtualizarUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 		when(this.usuarioRepository.save(any(Usuario.class))).then(
@@ -140,7 +140,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
-	@WithMockUser("admin")
+	@WithMockUser("admin@patrimonio.com.br")
 	void testRemoverUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 

@@ -19,7 +19,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -59,9 +60,8 @@ public class Usuario implements UserDetails {
 	private final List<Perfil> perfis = new ArrayList<>();
 
 	public void setSenha(final String senha) {
-		if (senha != null) {
-			this.senha = new BCryptPasswordEncoder().encode(senha);
-		}
+		final PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		this.senha = encoder.encode(senha);
 	}
 
 	@Override
