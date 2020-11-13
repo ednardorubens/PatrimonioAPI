@@ -1,8 +1,6 @@
 package br.com.ermig.patrimonio.controller;
 
 import java.net.URI;
-import java.util.Optional;
-import java.util.function.Function;
 
 import javax.validation.Valid;
 
@@ -54,22 +52,18 @@ public class MarcaController {
 	@GetMapping("/{id}")
 	@Cacheable(value = "marcas", key = "#id")
 	public ResponseEntity<Marca> buscar(@PathVariable final Integer id) {
-		return this.processResponse(
-			this.marcaRepository.findById(id),
-			marcaRetorno -> ResponseEntity.ok(marcaRetorno)
-		);
+		return ResponseEntity.of(this.marcaRepository.findById(id));
 	}
 
 	@PutMapping("/{id}")
 	@CacheEvict(value = "marcas", allEntries = true)
 	public ResponseEntity<Marca> atualizar(@PathVariable final Integer id, @RequestBody @Valid final MarcaDTO marcaDTO) {
-		final Marca marca = new Marca(marcaDTO.getNome());
-		return this.processResponse(
-			this.marcaRepository.findById(id).map(marcaDB -> {
+		return ResponseEntity.of(this.marcaRepository.findById(id)
+			.map(marcaDB -> {
+				final Marca marca = new Marca(marcaDTO.getNome());
 				BeanUtils.copyProperties(marca, marcaDB, "id");
 				return this.marcaRepository.save(marcaDB);
-			}),
-			marcaRetorno -> ResponseEntity.ok(marcaRetorno)
+			})
 		);
 	}
 
@@ -80,10 +74,6 @@ public class MarcaController {
 			this.marcaRepository.delete(marcaDB);
 			return ResponseEntity.noContent().build();
 		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	private ResponseEntity<Marca> processResponse(final Optional<Marca> optMarca, final Function<Marca, ResponseEntity<Marca>> func) {
-		return optMarca.map(marcaRetorno -> func.apply(marcaRetorno)).orElse(ResponseEntity.notFound().build());
 	}
 
 }

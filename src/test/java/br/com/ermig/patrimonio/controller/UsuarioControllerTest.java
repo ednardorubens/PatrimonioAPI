@@ -2,7 +2,6 @@ package br.com.ermig.patrimonio.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -53,6 +53,7 @@ class UsuarioControllerTest {
 	private PerfilRepository perfilRepository;
 
 	@Test
+	@WithMockUser("admin")
 	void testSalvarUsuario() throws Exception {
 		when(this.perfilRepository.findByNome("ADMIN")).thenReturn(Optional.of(new Perfil(1, "ADMIN")));
 		when(this.usuarioRepository.save(any(Usuario.class))).thenReturn(this.usuario);
@@ -61,7 +62,6 @@ class UsuarioControllerTest {
 			post("/usuarios")
 			.content(getJsonUsuario())
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isCreated())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -73,6 +73,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testListarUsuario() throws Exception {
 		when(this.usuarioRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -83,7 +84,6 @@ class UsuarioControllerTest {
 
 		this.mvc.perform(
 			get("/usuarios")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -94,12 +94,12 @@ class UsuarioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testBuscarUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 
 		this.mvc.perform(
 			get("/usuarios/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -110,6 +110,7 @@ class UsuarioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testAtualizarUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 		when(this.usuarioRepository.save(any(Usuario.class))).then(
@@ -120,7 +121,6 @@ class UsuarioControllerTest {
 			put("/usuarios/1")
 			.content("{ \"nome\": \"Raimundo Nonato\" }")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -133,7 +133,6 @@ class UsuarioControllerTest {
 			put("/usuarios/1")
 			.content("{ \"nome\": \"Raimundo Nonato\", \"perfis\": [] }")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -141,12 +140,12 @@ class UsuarioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testRemoverUsuario() throws Exception {
 		when(this.usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.usuario));
 
 		this.mvc.perform(
 			delete("/usuarios/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isNoContent());
 	}

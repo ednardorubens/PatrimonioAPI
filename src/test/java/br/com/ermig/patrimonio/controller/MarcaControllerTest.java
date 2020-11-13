@@ -3,7 +3,6 @@ package br.com.ermig.patrimonio.controller;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,6 +44,7 @@ class MarcaControllerTest {
 	private MarcaRepository marcaRepository;
 
 	@Test
+	@WithMockUser("admin")
 	void testErroSalvarMarca() throws Exception {
 		when(this.marcaRepository.save(any(Marca.class))).thenReturn(this.marca);
 
@@ -51,18 +52,18 @@ class MarcaControllerTest {
 			post("/marcas")
 			.content("{}")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isBadRequest())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.errors").isNotEmpty())
-		.andExpect(jsonPath("$.errors[0].field").value("nome"))
+		.andExpect(jsonPath("$.errors[0].name").value("nome"))
 		.andExpect(jsonPath("$.errors[0].error").value(startsWith("must not be")))
-		.andExpect(jsonPath("$.errors[1].field").value("nome"))
+		.andExpect(jsonPath("$.errors[1].name").value("nome"))
 		.andExpect(jsonPath("$.errors[1].error").value(startsWith("must not be")));
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testSalvarMarca() throws Exception {
 		when(this.marcaRepository.save(any(Marca.class))).thenReturn(this.marca);
 
@@ -70,7 +71,6 @@ class MarcaControllerTest {
 			post("/marcas")
 			.content("{ \"nome\": \"samsung\" }")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isCreated())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -80,6 +80,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testListarMarca() throws Exception {
 		when(this.marcaRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -90,7 +91,6 @@ class MarcaControllerTest {
 
 		this.mvc.perform(
 			get("/marcas")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -99,12 +99,12 @@ class MarcaControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testBuscarMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 
 		this.mvc.perform(
 			get("/marcas/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -113,6 +113,7 @@ class MarcaControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testAtualizarMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.marcaRepository.save(any(Marca.class))).then(
@@ -123,7 +124,6 @@ class MarcaControllerTest {
 			put("/marcas/1")
 			.content("{ \"nome\": \"dell\" }")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -132,12 +132,12 @@ class MarcaControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testRemoverMarca() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 
 		this.mvc.perform(
 			delete("/marcas/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isNoContent());
 	}

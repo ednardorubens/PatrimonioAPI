@@ -2,7 +2,6 @@ package br.com.ermig.patrimonio.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -49,6 +49,7 @@ class PatrimonioControllerTest {
 	private PatrimonioRepository patrimonioRepository;
 
 	@Test
+	@WithMockUser("admin")
 	void testSalvarPatrimonio() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.patrimonioRepository.save(any(Patrimonio.class))).thenReturn(this.patrimonio);
@@ -57,7 +58,6 @@ class PatrimonioControllerTest {
 			post("/patrimonios")
 			.content("{ \"nome\": \"monitor samsung\", \"descricao\": \"monitor samsung\", \"marca\": { \"id\": 1 }}")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isCreated())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -68,6 +68,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testListarPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findAll(any(Pageable.class))).then(
 			invocation -> {
@@ -78,7 +79,6 @@ class PatrimonioControllerTest {
 
 		this.mvc.perform(
 			get("/patrimonios")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -88,12 +88,12 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testBuscarPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
 
 		this.mvc.perform(
 			get("/patrimonios/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -103,6 +103,7 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testAtualizarPatrimonio() throws Exception {
 		when(this.marcaRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.marca));
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
@@ -114,7 +115,6 @@ class PatrimonioControllerTest {
 			put("/patrimonios/1")
 			.content("{ \"nome\": \"monitor dell\", \"marca\": { \"id\": 1 }}")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(user("admin"))
 		)
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -124,12 +124,12 @@ class PatrimonioControllerTest {
 	}
 
 	@Test
+	@WithMockUser("admin")
 	void testRemoverPatrimonio() throws Exception {
 		when(this.patrimonioRepository.findById(any(Integer.class))).thenReturn(Optional.of(this.patrimonio));
 
 		this.mvc.perform(
 			delete("/patrimonios/1")
-			.with(user("admin"))
 		)
 		.andExpect(status().isNoContent());
 	}

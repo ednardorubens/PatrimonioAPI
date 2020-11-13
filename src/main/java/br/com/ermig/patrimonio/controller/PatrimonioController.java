@@ -1,8 +1,6 @@
 package br.com.ermig.patrimonio.controller;
 
 import java.net.URI;
-import java.util.Optional;
-import java.util.function.Function;
 
 import javax.validation.Valid;
 
@@ -59,22 +57,18 @@ public class PatrimonioController {
 	@GetMapping("/{id}")
 	@Cacheable(value = "patrimonios", key = "#id")
 	public ResponseEntity<Patrimonio> buscar(@PathVariable final Integer id) {
-		return this.processResponse(
-			this.patrimonioRepository.findById(id),
-			patrimonioRetorno -> ResponseEntity.ok(patrimonioRetorno)
-		);
+		return ResponseEntity.of(this.patrimonioRepository.findById(id));
 	}
 
 	@PutMapping("/{id}")
 	@CacheEvict(value = "patrimonios", allEntries = true)
 	public ResponseEntity<Patrimonio> atualizar(@PathVariable final Integer id, @RequestBody @Valid final PatrimonioDTO patrimonioDTO) {
-		final Patrimonio patrimonio = parse(patrimonioDTO);
-		return this.processResponse(
-			this.patrimonioRepository.findById(id).map(patrimonioDB -> {
+		return ResponseEntity.of(this.patrimonioRepository.findById(id)
+			.map(patrimonioDB -> {
+				final Patrimonio patrimonio = parse(patrimonioDTO);
 				BeanUtils.copyProperties(patrimonio, patrimonioDB, "numTombo");
 				return this.patrimonioRepository.save(patrimonioDB);
-			}),
-			patrimonioRetorno -> ResponseEntity.ok(patrimonioRetorno)
+			})
 		);
 	}
 
@@ -85,10 +79,6 @@ public class PatrimonioController {
 			this.patrimonioRepository.delete(patrimonioDB);
 			return ResponseEntity.noContent().build();
 		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	private ResponseEntity<Patrimonio> processResponse(final Optional<Patrimonio> optPatrimonio, final Function<Patrimonio, ResponseEntity<Patrimonio>> func) {
-		return optPatrimonio.map(patrimonioRetorno -> func.apply(patrimonioRetorno)).orElse(ResponseEntity.notFound().build());
 	}
 
 	private Patrimonio parse(final PatrimonioDTO patrimonioDTO) {
