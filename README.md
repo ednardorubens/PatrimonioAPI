@@ -7,7 +7,6 @@ API REST para o gerenciamento de patrimônios de uma empresa.
 
 ## Construir e rodar a API
 ```
-$ docker run -d --name sqlserver2017 --restart=always -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=79qASUYzx!@1245" -p 1433:1433 mcr.microsoft.com/mssql/server:2017-latest
 $ cd PatrimonioAPI
 $ mvn package spring-boot:run
 ```
@@ -19,12 +18,13 @@ Você pode aprender e utilizar a api através da documentação do swagger na UR
  - [Spring Boot](https://spring.io/projects/spring-boot)
  - [Spring Boot Actuator](https://spring.io/guides/gs/actuator-service)
  - [Spring Boot Security](https://spring.io/guides/gs/securing-web)
+ - [Spring Boot Oauth2](https://spring.io/guides/tutorials/spring-boot-oauth2)
  - [JJWT Token](https://java.jsonwebtoken.io)
  - [Spring Cache](https://spring.io/guides/gs/caching)
  - [Caffeine](https://www.caffeine.tv)
- - [Spring Data Jpa](https://spring.io/guides/gs/accessing-data-jpa)
+ - [Spring Data JPA](https://spring.io/guides/gs/accessing-data-jpa)
+ - [Spring Data JPA Auditing](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#auditing)
  - [Hibernate](https://hibernate.org)
- - [Microsoft SQL Server](https://dzone.com/articles/configuring-spring-boot-for-microsoft-sql-server)
  - [H2 Database](http://www.h2database.com/html/main.html)
  - [Spring Data Envers](https://spring.io/projects/spring-data-envers)
  - [Flyway](https://flywaydb.org/getstarted/java)
