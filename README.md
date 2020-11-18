@@ -26,7 +26,6 @@ Você pode aprender e utilizar a api através da documentação do swagger na UR
  - [Spring Data JPA Auditing](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#auditing)
  - [Hibernate](https://hibernate.org)
  - [H2 Database](http://www.h2database.com/html/main.html)
- - [Spring Data Envers](https://spring.io/projects/spring-data-envers)
  - [Flyway](https://flywaydb.org/getstarted/java)
  - [Lombok](https://projectlombok.org)
  - [Swagger 2](https://springfox.github.io/springfox/docs/current)
