@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -21,12 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.jayway.jsonpath.JsonPath;
-
-import br.com.ermig.patrimonio.dto.UsuarioDTO;
-import br.com.ermig.patrimonio.model.Usuario;
-import br.com.ermig.patrimonio.repository.UsuarioRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,35 +34,34 @@ class AutenticacaoControllerTest {
 	@Autowired
 	private MockMvc mvc;
 
-	@Autowired
-	private UsuarioRepository usuarioRepository;
-
 	public static String token;
 
 	@Test
 	@Order(1)
 	void testAutenticacaoErro() throws Exception {
-		this.mvc.perform(
-			post("/auth")
-			.content("{ \"email\": \"lcastro@empresa.com.br\", \"senha\": \"459\" }")
-			.contentType(MediaType.APPLICATION_JSON)
-		)
+		this.mvc.perform(post("/usuarios"))
 		.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	@Order(2)
+	@SuppressWarnings("deprecation")
 	void testAutenticacaoSucesso() throws Exception {
-		this.usuarioRepository.save(new Usuario(new UsuarioDTO("Raimundo Castro", "rcastro@empresa.com.br", "123", List.of("USER", "ADMIN"))));
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	    params.add("grant_type", "password");
+	    params.add("username", "admin@patrimonio.com.br");
+	    params.add("password", "P@7R1M0N10$");
+		
 		this.mvc.perform(
-			post("/auth")
-			.content("{ \"email\": \"rcastro@empresa.com.br\", \"senha\": \"123\" }")
-			.contentType(MediaType.APPLICATION_JSON)
+			post("/oauth/token")
+			.header("Authorization", "Basic cGF0cmltb25pb19jbGllbnQ6UEA3UjFNME4xMCQ=")
+			.params(params)
 		)
 		.andExpect(status().isOk())
-		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(jsonPath("$.tipo").value("Bearer"))
-		.andExpect(jsonPath("$.token").isNotEmpty())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(jsonPath("$.token_type").value("bearer"))
+		.andExpect(jsonPath("$.access_token").isNotEmpty())
+		.andExpect(jsonPath("$.refresh_token").isNotEmpty())
 		.andDo(result -> setToken(result));
 	}
 
@@ -79,8 +75,8 @@ class AutenticacaoControllerTest {
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.content[0].id").value(1))
-		.andExpect(jsonPath("$.content[0].nome").value("Raimundo Castro"))
-		.andExpect(jsonPath("$.content[0].email").value("rcastro@empresa.com.br"))
+		.andExpect(jsonPath("$.content[0].nome").value("admin"))
+		.andExpect(jsonPath("$.content[0].email").value("admin@patrimonio.com.br"))
 		.andExpect(jsonPath("$.content[0].senha").doesNotExist());
 	}
 
@@ -106,16 +102,16 @@ class AutenticacaoControllerTest {
 		this.mvc.perform(
 			get("/usuarios")
 		)
-		.andExpect(status().isForbidden());
+		.andExpect(status().isUnauthorized());
 
 		this.mvc.perform(
 			get("/usuarios")
 			.header("Authorization", "usuario")
 		)
-		.andExpect(status().isForbidden());
+		.andExpect(status().isUnauthorized());
 	}
 
 	private void setToken(final MvcResult result) throws UnsupportedEncodingException {
-		AutenticacaoControllerTest.token = JsonPath.read(result.getResponse().getContentAsString(), "$.token");
+		AutenticacaoControllerTest.token = JsonPath.read(result.getResponse().getContentAsString(), "$.access_token");
 	}
 }

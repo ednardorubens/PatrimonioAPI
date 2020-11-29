@@ -2,8 +2,6 @@ package br.com.ermig.patrimonio.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -61,22 +59,18 @@ public class UsuarioController {
 	@GetMapping("/{id}")
 	@Cacheable(value = "usuarios", key = "#id")
 	public ResponseEntity<Usuario> buscar(@PathVariable final Integer id) {
-		return this.processResponse(
-			this.usuarioRepository.findById(id),
-			usuarioRetorno -> ResponseEntity.ok(usuarioRetorno)
-		);
+		return ResponseEntity.of(this.usuarioRepository.findById(id));
 	}
 
 	@PutMapping("/{id}")
 	@CacheEvict(value = "usuarios", allEntries = true)
 	public ResponseEntity<Usuario> atualizar(@PathVariable final Integer id, @RequestBody @Valid final UsuarioDTO usuarioDTO) {
-		final Usuario usuario = parseUsuario(usuarioDTO);
-		return this.processResponse(
-			this.usuarioRepository.findById(id).map(usuarioDB -> {
+		return ResponseEntity.of(this.usuarioRepository.findById(id)
+			.map(usuarioDB -> {
+				final Usuario usuario = parseUsuario(usuarioDTO);
 				BeanUtils.copyProperties(usuario, usuarioDB, "id");
 				return this.usuarioRepository.save(usuarioDB);
-			}),
-			usuarioRetorno -> ResponseEntity.ok(usuarioRetorno)
+			})
 		);
 	}
 
@@ -87,10 +81,6 @@ public class UsuarioController {
 			this.usuarioRepository.delete(usuarioDB);
 			return ResponseEntity.noContent().build();
 		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	private ResponseEntity<Usuario> processResponse(final Optional<Usuario> optUsuario, final Function<Usuario, ResponseEntity<Usuario>> func) {
-		return optUsuario.map(usuarioRetorno -> func.apply(usuarioRetorno)).orElse(ResponseEntity.notFound().build());
 	}
 
 	private Usuario parseUsuario(final UsuarioDTO usuarioDTO) {
