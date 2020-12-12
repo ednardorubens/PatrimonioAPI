@@ -1,13 +1,12 @@
 # Patrimônio API
 API REST para o gerenciamento de patrimônios de uma empresa. 
 
-## Requirementos
+## Requisitos
  - [JDK 13](https://www.oracle.com/java/technologies/javase-jdk13-downloads.html)
  - [Maven](https://maven.apache.org/download.cgi)
 
 ## Construir e rodar a API
 ```
-$ docker run -d --name sqlserver2017 --restart=always -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=79qASUYzx!@1245" -p 1433:1433 mcr.microsoft.com/mssql/server:2017-latest
 $ cd PatrimonioAPI
 $ mvn package spring-boot:run
 ```
